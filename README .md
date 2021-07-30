@@ -3,8 +3,8 @@ Author: [Vincent Welsh](https://www.linkedin.com/in/vincent-404/)
 
 
 
+![external-content duckduckgo](https://user-images.githubusercontent.com/74747022/127698974-ab9d2c3e-8e41-45ec-b7e5-88eab72ae5b1.jpg)
 
-![download.png](attachment:download.png)
 
 
 
@@ -17,7 +17,9 @@ and __[The Numbers](https://www.the-numbers.com/)__. The intention behind invest
 
 ### Business Problem
 
-Microsoft sees all the big companies creating original video content and they want to get in on the fun. They have decided to create a new movie studio, but they don’t know anything about creating movies. You are charged with exploring what types of films are currently doing the best at the box office. You must then translate those findings into actionable insights that the head of Microsoft's new movie studio can use to help decide what type of films to create.
+To ensure that Microsoft impresses shareholders with its decision to enter the movie industry I investigate data about common movie trends. During my investigation, I have discovered common movie characteristics that impact gross revenue. 
+By implementing my recommendations Microsoft can output higher gross movie revenues.
+
 
 ### The Data
  The movie datasets include thousands of movies ranging from 1962 all the way to future films scheduled up to 2026 with titles,dates, profits, and othe relevant information.
@@ -39,38 +41,41 @@ This project uses desciptive analysis, including description of trends over time
 ## Results
 Movies with a higher productin budget are more likely to have higher domestic/worldwide gross revenue.
 
-![download-1.png](attachment:download-1.png)
+![download-4](https://user-images.githubusercontent.com/74747022/127699417-d101e5fc-4422-44e9-864a-adfae36bcb51.png)
+![download](https://user-images.githubusercontent.com/74747022/127699426-660cfa54-58f9-47de-b7fa-bc5a55eb9e70.png)
 
 
-Movies with a runtime (minutes) of 120-180 minutes produce a higher gross domestic/worldwide gross revenue.
+
+Having a length of  [60-120) have twice the average amount in worldwide gross revenue.
 
 
-![download-2.png](attachment:download-2.png)
+![download-5](https://user-images.githubusercontent.com/74747022/127699540-305c2153-8b59-4316-a5ee-98ed6c0635f2.png)
+
 
 Movies with a family rating PG-13/PG perform better in the box office.
 
-![download-3.png](attachment:download-3.png)
+![download-6](https://user-images.githubusercontent.com/74747022/127699553-dec27c15-2c2a-442c-b889-60ae904eac79.png)
+
 
 ## Conclusions
 
 This analysis leads to three business recommendations for creating a profitable movie at Microsoft Studios:
 
-- __A bigger budget correlates to bigger box office earnings.__ While this does not guarantee a successful movie, people are drawn toward higher-quality films more often than not.
+Expect gross revenue to reflect  production budget
 
-- __Plan to make a movie that is 120-180 minutes long.__ The trends are clear, 2 hours is often where the best sellers fall into.
+Plan a movie that is 60-120 minutes long
 
-- __Make family friendly movies. I.e rated PG-13 or PG.__ This will result in a higher boxoffice because there is a larger target audience.
+Make a movie  that is family friendly i.e. PG-13 /  PG
+
 
 ## Next Steps
 
 Further analyses could yield additional insights to further improve operations at Microsoft Studios:
 
-- __Find the relationship between critic ratings and boxoffice.__ This understanding could help in knowing necessary steps to present movies to critics or if they are necessary at all.
+-Repeating the results from above but based on genre would give insight into which genres Microsoft  should invest in.
 
-- __Model movie success bases on the names of actors involved.__ This analysis could provide insight into which actors are the most profitable.
-## For More Information
+-An investigation into the relationship between actors involved in the movies and the gross revenue would provide Microsoft an informed recommendation about who to cast.
 
-See the full analysis in this  __[Jupyter Notebook](http://localhost:8888/notebooks/dsc-phase-1-project/microsoft_movies_anaylysis.ipynb)__ or review this presentation.
 
 For additional info,contact Vincent Welsh at
 jvincentwelsh99@hotmail.com 
