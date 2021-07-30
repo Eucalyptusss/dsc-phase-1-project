@@ -18,14 +18,13 @@ import data_preparation as dp
 
 
 def budget_corr(budget_and_profit):
-#This method populates a heatmap showing correlation between production budget
-#and domestic/worldwide gross. It also returns a table of associated correlations.
-    plt.figure(figsize=(12,10))
+    """
+    This function return the correlation between production_budget and
+    domestic/worldwide gross in the budget_and_profit data frame.
+    """
     cor = budget_and_profit[['production_budget','domestic_gross','worldwide_gross']].corr()
-    sns.heatmap(cor, annot=True,cmap=plt.cm.Reds)
-    plt.show()
     cor_target = abs(cor["production_budget"])
-    relevant_features = cor_target[cor_target>.5]
+    relevant_features = cor_target[(cor_target>.5) & (cor_target<1)]
     return(relevant_features)
     
 def budget_line(budget_and_profit):
@@ -63,24 +62,29 @@ def run_all(run_df):
     plt.ylabel("Gross $ Amount ()")
     
 def run_avg(avg_world,avg_domestic,index):
-#This function makes a bar chart with x axis as time ranges (min) and
-# y axis is average gross
+    """
+    This function plots a bar chart that compares the list avg_world and avg_domestic
+    to Runtime withing ranges of the index values.
+    """
+
     df = pd.DataFrame({
     'Average Worldwide Gross':avg_world,
     'Average Domestic Gross':avg_domestic},
      index=index)
 
-
-    ax=df.plot.bar(rot=0)
-    ax.yaxis.set_major_formatter(dp.format_num)
     
-    plt.xlabel("Runtime (minutes)")
-    plt.title("Runtime range vs Average domestic/worldwide gross ")
-    plt.ylabel("Gross $ Amount (USD)")
+    ax=df.plot.bar(rot=0,figsize=(20,10))
+
+    ax.yaxis.set_major_formatter(dp.format_num)
+    plt.xticks(fontsize=13.5)
+    plt.xlabel("Runtime (minutes)",fontsize=18)
+    plt.title("Runtime range vs Average domestic/worldwide gross",fontsize=18)
+    plt.ylabel("Gross $ Amount (USD)",fontsize=18)
     
 def rating_bar(r,pg_13,pg,g):
     df = pd.DataFrame({
     'Ratings':['R','PG-13','PG','G'],
     'Average Box Office Earnings':[r,pg_13,pg,g]})
     ax=df.plot.barh(x='Ratings',y='Average Box Office Earnings')
+    plt.title("Average Box Office vs Movie Rating",fontsize=18)
     ax.xaxis.set_major_formatter(dp.format_num)    

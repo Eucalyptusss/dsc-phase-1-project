@@ -14,59 +14,72 @@ import matplotlib
 import matplotlib.pyplot as plt
 
 
-def remove_NaN(run_df):
-#This function removes NaN values from run_df.worldwide_gross column
-    for idx in range(len(run_df.worldwide_gross)):
-        if type(run_df.worldwide_gross[idx]) != int:
-            if len(run_df.worldwide_gross[idx]) > 1:
-                run_df.worldwide_gross[idx]=run_df.worldwide_gross[idx].dropna()
+
+
+                
+def construct_gross_col(budget_and_profit, movie_profits_df, known_titles):
+    """
+    This function return a list of dataframe rows that from movie_profits_df
+    and budget_and_profit IF the row's movie title is in known_titles
     
-
-def construct_run(budget_and_profit ,movie_profits_df,\
-                  additional_movie_info_df, run_df,known_titles):
-#This function adds runtime,doemstic gross, and worldwide gross to the 
-#three lists below. Then the lists are placed as the columns for run_df
-    ordered_domestic=[]
-    ordered_runtime=[]
-    ordered_worldwide=[]
-
+    """
+    domestic = []
     titles_one=list(budget_and_profit.movie)
-
-
     titles_two=list(movie_profits_df.title)
-
-
     for title in known_titles:
-        ordered_runtime.append(
-        additional_movie_info_df.loc[additional_movie_info_df.primary_title==title]\
-            .runtime_minutes)
         if title in titles_one:
-            ordered_domestic.append(
-            budget_and_profit.loc[budget_and_profit.movie==title].domestic_gross)
-            ordered_worldwide.append(
-            budget_and_profit.loc[budget_and_profit.movie==title].worldwide_gross)
+            domestic.append(budget_and_profit.loc[budget_and_profit.movie == \
+                                                 title])
         elif title in titles_two:
-            ordered_domestic.append(
-            movie_profits_df.loc[movie_profits_df.title==title].domestic_gross)
-            ordered_worldwide.append(
-            movie_profits_df.loc[movie_profits_df.title==title].foreign_gross)
-            
-    run_df.domestic_gross=ordered_domestic
-    run_df.runtime=ordered_runtime
-    run_df.worldwide_gross=ordered_worldwide
+            domestic.append(movie_profits_df.loc[movie_profits_df.title == \
+                                                title])
+  
+    return domestic
+def construct_runtime_col(additional_movie_info_df, known_titles):
+    """
+    This function compares known_titles to titles in the dataframe
+    additional_movie_info_df. If a title is in both the list and the df
+    then it is added to a list called runtimes. This function returns that
+    list. The list needs further cleaning because some elements of the list
+    have multiple rows due to duplicate movie titles. 
+    """
     
+    titles= list(additional_movie_info_df.primary_title)
 
-def better_runtime_titles(additional_movie_info_df):
-#This function makes a list of titles that habe an associated runtime 
-#i.e not NaN
+    rel_titles=[]
+    for el in known_titles:
+        if el in titles:
+            rel_titles.append(el)
+    rel_titles = list(set(rel_titles))       
+    runtimes = []
+    df = additional_movie_info_df.copy()
+    for title in rel_titles:
+        
+            
+        runtime = df.loc[df.primary_title == title]
+        runtimes.append(runtime)
+    runtimes = runtimes
+    
+    return runtimes   
+
+
+
+    
+#old name was better_runtime_titles
+def list_of_titles_with_runtime(additional_movie_info_df):
+    """
+    This function takes the data frame additional_movie_info_df and returns a list 
+    of movie titles that have an associated runtime i.e. not NaN. 
+    """
     better_titles = additional_movie_info_df.loc[additional_movie_info_df["runtime_minutes"].\
                                         isna() == False].primary_title
     return better_titles
 
-
-def unique_names(movie_profits_df,budget_and_profit):
-#This function goes through two dataframes with profit information and makes
-#a list of unique movie titles that have an associated $ amount.
+#old name was unique_names
+def list_common_titles(movie_profits_df,budget_and_profit):   
+    """ 
+    This function returns a list of common movie titles within movie_profits_df and budget_and_profit. It does this by looping through each of the associated columns and checking if the movie title is in the alternative dataframe. Before returning, duplicates are removed from the list and the list is sorted. 
+    """
     unique_names=[]
     for movie in movie_profits_df.title:
         if movie in list(movie_profits_df.loc[movie_profits_df.domestic_gross.isna()==False].title)\
@@ -86,66 +99,86 @@ def unique_names(movie_profits_df,budget_and_profit):
     return unique_names
 
 def format_num(data_value,indx):
-#This function formats graph data to show B for billion, M for million,
-# and k for thousand
+    """
+    This function formats graphs by adding B to billions, M to milliions, 
+    and K to thousands
+    """
+
     if data_value >= 1_000_000_000:
         formatter = '{:1.2f}B'.format(data_value*.000000001)
+        return formatter
     elif data_value >= 1_000_000:
         formatter = '{:1.1f}M'.format(data_value*0.000001)
-    else:
+        return formatter
+    elif data_value >= 1_000:
         formatter = '{:1.0f}K'.format(data_value*.001)
-    return formatter
-
-
-def clean_it(em):
-#This function cleans the neccessary columns of budget_and_profit
-    #cleans budget
-    budget = em['production_budget'].str.\
-replace(',','')
-    budget=budget.apply(lambda x: x.strip('$'))
-    em['production_budget']=budget.astype('int64')
-    #cleans domestic gross
-    budget = em['domestic_gross'].str.\
-replace(',','')
-    budget=budget.apply(lambda x: x.strip('$'))
-    em['domestic_gross']=budget.astype('int64')
-    #cleans worldwide gross
-    budget = em['worldwide_gross'].str.\
-replace(',','')
-    budget=budget.apply(lambda x: x.strip('$'))
-    em['worldwide_gross']=budget.astype('int64')
-
+        return formatter
+    else:
+        formatter=None
     
-def clean_run(rune):
-#This function fixes the datatypes of the run_df by casting to int
-    index=0
-    for i in rune:
-        if type(i) != int:
-            if len(i) > 1:
-                rune[index]=int(rune[index][rune[index].idxmin()])
-            else:
-                rune[index]=int(rune[index])
-            index+=1
-        else:
-            rune[index]=int(rune[index])
-            index+=1
+
+
+def change_cols_to_int(col_to_change):
+    """ This function returns a column of values after stripping them
+    of , and $. Then each element is casted as an integer. """
+    clean_col = col_to_change.str.replace(',','')
+    clean_col = clean_col.apply(lambda x: x.strip('$'))
+    clean_col = clean_col.astype('int64')
+    return clean_col
+
+
+def populate_average_world(df,start_val):
+    """
+    This function takes in a dataframe and the starting range for the desired average value for the worldwide gross. It does this by first assigning a sample size of 58. Then for i in range(60, 181, 60) it has three conditional statements; i==60,i==180, or else statemente. Conditionals 60 and 180 run a .loc on the df parameter [df.runtime < 60].sort_values(by='worldwide_gross').\
+tail(sample).worldwide_gross.mean(). Which collects the top 58 values from the dataframe returned by the .loc.
+
+    """
+    sample = 58
+   
+    average = []
+    for i in range(60, 180, 60):
+        
+        if i == 60:
+            
+            average.append(
+                df.loc[df.runtime < 60].sort_values(by='worldwide_gross').\
+                tail(sample).worldwide_gross.mean()
+            )
+           
+            
+        average.append(
+        df.loc[(df.runtime>=i)  & (df.runtime < (i+60))].
+            sort_values(by='worldwide_gross').
+            tail(sample).worldwide_gross.mean())
+      
+    
+    return average 
+
+
+def populate_average_dom(df,start_val):
+    """
+  This function takes in a dataframe and the starting range for the desired average value for the domestic gross. It does this by first assigning a sample size of 58. Then for i in range(60, 181, 60) it has three conditional statements; i==60,i==180, or else statemente. Conditionals 60 and 180 run a .loc on the df parameter [df.runtime < 60].sort_values(by='domestic_gross').\
+tail(sample).domestic_gross.mean(). Which collects the top 58 values from the dataframe returned by the .loc.
+    """
+    sample = 58
+   
+    average = []
+    for i in range(60, 180, 60):
+        
+        if i == 60:
+            
+            average.append(
+                df.loc[df.runtime < 60].sort_values(by='worldwide_gross').\
+                tail(sample).domestic_gross.mean()
+            )
+       
           
+            
+        average.append(df.loc[(df.runtime>=i) & (df.runtime < (i+60))].
+            sort_values(by='worldwide_gross').tail(sample).domestic_gross.mean())
+      
     
-#These methods will return the average gross provided a runtime range of count - count+60 {
-
-def populate_average_world(data,count):
-    count = count
-    average = data.loc[(data.runtime>count) & (data.runtime<=count+60)].\
-    worldwide_gross.mean()
     return average
-
-def populate_average_dom(data,count):
-    count = count
-    average = data.loc[(data.runtime>count) & (data.runtime<=count+60)].\
-    domestic_gross.mean()
-    return average    
-#}
-
 
     
     
